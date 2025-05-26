@@ -4,7 +4,7 @@ public class DataManager : NetworkBehaviour
 {
     public static DataManager Instance;
     
-    [SyncVar] public CellState CurrentTurn = CellState.Player1;
+    [SyncVar] public CellState CurrentPlayer = CellState.Player1;
 
     public void Awake()
     {

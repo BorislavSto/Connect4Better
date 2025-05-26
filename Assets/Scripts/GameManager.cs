@@ -1,11 +1,11 @@
 using Mirror;
-using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum GameMode
 {
     Local,
     VsAI,
-    Online,
+    Multiplayer,
 }
 
 public enum PlayerType
@@ -49,6 +49,28 @@ public class GameManager : NetworkManager
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
+
+    public void StartMultiplayer()
+    {
+        CurrentGameMode = GameMode.Multiplayer;
+        StartHost();
+    }
+
+    public void StartLocalGame()
+    {
+        CurrentGameMode = GameMode.Local;
+        DataManager.Instance.CurrentPlayer = CellState.Player1;
+        SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
+    }
+    
+    public void StartVsAIGame()
+    {
+        CurrentGameMode = GameMode.VsAI;
+        DataManager.Instance.CurrentPlayer = CellState.Player1;
+        SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
+        // aiPlayerEnabled = true;
+        // initialize AI if needed
+    }
     
     public bool IsMyTurn(CellState mySide)
     {
@@ -58,10 +80,10 @@ public class GameManager : NetworkManager
         if (CurrentGameMode == GameMode.VsAI)
             return (mySide == CellState.Player1);
 
-        if (CurrentGameMode == GameMode.Online)
+        if (CurrentGameMode == GameMode.Multiplayer)
         {
             var localPlayer = NetworkClient.connection.identity.GetComponent<PlayerController>();
-            return (mySide == DataManager.Instance.CurrentTurn  && localPlayer.myPlayerSide == DataManager.Instance.CurrentTurn );
+            return (mySide == DataManager.Instance.CurrentPlayer  && localPlayer.myPlayerSide == DataManager.Instance.CurrentPlayer );
         }
 
         return false;
@@ -70,6 +92,11 @@ public class GameManager : NetworkManager
     [Server]
     public void SwitchTurn()
     {
-        DataManager.Instance.CurrentTurn = (DataManager.Instance.CurrentTurn  == CellState.Player1) ? CellState.Player2 : CellState.Player1;
+        DataManager.Instance.CurrentPlayer = (DataManager.Instance.CurrentPlayer  == CellState.Player1) ? CellState.Player2 : CellState.Player1;
+    }    
+    
+    public void SwitchTurnSingleplayer()
+    {
+        DataManager.Instance.CurrentPlayer = (DataManager.Instance.CurrentPlayer  == CellState.Player1) ? CellState.Player2 : CellState.Player1;
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 
 public class RaycastInput : MonoBehaviour
 {
@@ -17,7 +18,10 @@ public class RaycastInput : MonoBehaviour
                 if (hit.collider.transform == boardManager.columns[i].columnTransform)
                 {
                     if (Input.GetMouseButtonDown(0))
-                        boardManager.DropPiece(i);
+                    {
+                        boardManager.TryDropPiece(i);
+                    }
+
                     break;
                 }
             }
